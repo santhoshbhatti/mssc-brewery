@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.UUID;
 @Slf4j
 @RestController
@@ -23,16 +25,16 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDto> saveCustomer(@RequestBody  CustomerDto customerDto){
+    public ResponseEntity saveCustomer(@Valid @RequestBody  CustomerDto customerDto){
         HttpHeaders headers = new HttpHeaders();
         CustomerDto savedDto = customerService.saveCustomer(customerDto);
         log.info("saved customer details "+savedDto.getCustomerId());
-        headers.add("Location","http://localhost:8080/api/v1/customer"+savedDto.getCustomerId());
+        headers.add("Location","http://localhost:8080/api/v1/customer/"+savedDto.getCustomerId());
         return new ResponseEntity<>(headers,HttpStatus.OK);
     }
     @PutMapping("/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateCustomer(@PathVariable UUID customerId,@RequestBody CustomerDto customerDto){
+    public void updateCustomer(@PathVariable UUID customerId,@Valid @RequestBody CustomerDto customerDto){
         customerService.updateCustomer(customerId,customerDto);
     }
     @DeleteMapping("/{customerId}")
@@ -41,4 +43,6 @@ public class CustomerController {
         log.info("deleting the customer "+customerId);
         customerService.deleteCustomer(customerId);
     }
+
+
 }
